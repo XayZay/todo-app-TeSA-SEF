@@ -76,6 +76,10 @@ http://127.0.0.1:5173/
 - Class: A
 - Pair: 16
 
-## Deployment
+## Assignment Status
 
-AWS deployment will be completed after the class AWS account is provisioned. The planned deployment uses an Ubuntu EC2 instance with nginx serving the React build and proxying `/api/` requests to the Express backend.
+- Local build completed
+- GitHub repository pushed
+- AWS deployment completed
+- Required screenshots captured
+- AWS resources torn down after completion
