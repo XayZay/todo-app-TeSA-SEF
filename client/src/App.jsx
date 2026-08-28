@@ -4,6 +4,8 @@ import './App.css';
 function App() {
   const [todos, setTodos] = useState([]);
   const [title, setTitle] = useState('');
+  const completedCount = todos.filter((todo) => todo.is_done).length;
+  const activeCount = todos.length - completedCount;
 
   async function loadTodos() {
     const res = await fetch('/api/todos');
@@ -39,33 +41,94 @@ function App() {
   }
 
   return (
-    <div className="app">
-      <h1>My To-Do List</h1>
+    <div className="app-shell">
+      <aside className="sidebar">
+        <div className="brand">
+          <span className="brand-mark">✓</span>
+          <span>TaskBoard</span>
+        </div>
 
-      <form onSubmit={addTodo}>
-        <input
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          placeholder="What needs doing?"
-        />
-        <button type="submit">Add</button>
-      </form>
+        <div className="profile">
+          <div className="avatar">OO</div>
+          <div>
+            <strong>Oyeyemi Oluwatobiloba</strong>
+            <span>Class A - Pair 16</span>
+          </div>
+        </div>
 
-      <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>
+        <div className="sidebar-section">
+          <p>Overview</p>
+          <div className="metric is-active">
+            <span>All tasks</span>
+            <strong>{todos.length}</strong>
+          </div>
+          <div className="metric">
+            <span>In progress</span>
+            <strong>{activeCount}</strong>
+          </div>
+          <div className="metric">
+            <span>Completed</span>
+            <strong>{completedCount}</strong>
+          </div>
+        </div>
+      </aside>
+
+      <main className="workspace">
+        <header className="topbar">
+          <div>
+            <p className="eyebrow">Local assignment build</p>
+            <h1>Today&apos;s tasks</h1>
+          </div>
+          <div className="status-pill">
+            <span></span>
+            PostgreSQL connected
+          </div>
+        </header>
+
+        <section className="task-panel">
+          <div className="panel-heading">
+            <div>
+              <h2>To Do</h2>
+              <p>{activeCount} active, {completedCount} completed</p>
+            </div>
+            <span className="task-total">{todos.length}</span>
+          </div>
+
+          <form onSubmit={addTodo}>
             <input
-              type="checkbox"
-              checked={todo.is_done}
-              onChange={() => toggleTodo(todo.id)}
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              placeholder="What needs doing?"
             />
-            <span className={todo.is_done ? 'done' : ''}>{todo.title}</span>
-            <button onClick={() => deleteTodo(todo.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+            <button type="submit" disabled={!title.trim()}>
+              Add task
+            </button>
+          </form>
 
-      {todos.length === 0 && <p>Nothing here yet. Add your first to-do.</p>}
+          <ul>
+            {todos.map((todo) => (
+              <li key={todo.id} className={todo.is_done ? 'is-done' : ''}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={todo.is_done}
+                    onChange={() => toggleTodo(todo.id)}
+                  />
+                  <span>{todo.title}</span>
+                </label>
+                <button onClick={() => deleteTodo(todo.id)}>Delete</button>
+              </li>
+            ))}
+          </ul>
+
+          {todos.length === 0 && (
+            <div className="empty-state">
+              <span>+</span>
+              <p>No tasks yet. Add your first task.</p>
+            </div>
+          )}
+        </section>
+      </main>
     </div>
   );
 }
