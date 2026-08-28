@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 
+const dateFormatter = new Intl.DateTimeFormat('en', {
+  day: 'numeric',
+  month: 'short',
+});
+
 function App() {
   const [todos, setTodos] = useState([]);
   const [title, setTitle] = useState('');
@@ -40,6 +45,11 @@ function App() {
     loadTodos();
   }
 
+  function formatTaskDate(date) {
+    if (!date) return '';
+    return dateFormatter.format(new Date(date));
+  }
+
   return (
     <div className="app-shell">
       <aside className="sidebar">
@@ -76,7 +86,6 @@ function App() {
       <main className="workspace">
         <header className="topbar">
           <div>
-            <p className="eyebrow">Local assignment build</p>
             <h1>Today&apos;s tasks</h1>
           </div>
           <div className="status-pill">
@@ -116,7 +125,10 @@ function App() {
                   />
                   <span>{todo.title}</span>
                 </label>
-                <button onClick={() => deleteTodo(todo.id)}>Delete</button>
+                <div className="task-actions">
+                  <time dateTime={todo.created_at}>{formatTaskDate(todo.created_at)}</time>
+                  <button onClick={() => deleteTodo(todo.id)}>Delete</button>
+                </div>
               </li>
             ))}
           </ul>
