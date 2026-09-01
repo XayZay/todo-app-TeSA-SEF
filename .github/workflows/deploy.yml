@@ -5,14 +5,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  id-token: write
-  contents: read
-
 env:
   AWS_REGION: us-east-1
+  # >>> CHANGE THIS LINE to your own ECR repository name. <<<
   ECR_REPO: lab-test-a-pair17-ecr
-  ROLE_ARN: arn:aws:iam::232881763218:role/tesa-lab-gha-role-a-pair17
 
 jobs:
   build:
@@ -26,7 +22,8 @@ jobs:
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ env.ROLE_ARN }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
       - uses: aws-actions/amazon-ecr-login@v2
@@ -54,7 +51,8 @@ jobs:
     steps:
       - uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ env.ROLE_ARN }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Tell the server to run the new image
@@ -62,9 +60,9 @@ jobs:
           aws ssm send-command \
             --instance-ids ${{ vars.INSTANCE_ID }} \
             --document-name "AWS-RunShellScript" \
-            --parameters "commands=[
-              \"aws ecr get-login-password --region $AWS_REGION | docker login -u AWS --password-stdin $REGISTRY\",
-              \"docker pull $IMAGE:latest\",
-              \"docker rm -f todo || true\",
-              \"docker run -d --name todo --restart always -p 80:3001 $IMAGE:latest\"
-            ]"
+            --parameters 'commands=[
+              "aws ecr get-login-password --region '"$AWS_REGION"' | docker login -u AWS --password-stdin '"$REGISTRY"'",
+              "docker pull '"$IMAGE"':latest",
+              "docker rm -f todo || true",
+              "docker run -d --name todo --restart always -p 80:3001 '"$IMAGE"':latest"
+            ]'
