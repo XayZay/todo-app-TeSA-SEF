@@ -16,6 +16,5 @@ RUN npm ci --omit=dev
 COPY server/ ./
 COPY --from=build /app/client/dist /app/client/dist
 
-COPY --from=build /app/client/dist /app/client/dist
 EXPOSE 3001
 CMD ["node", "server.js"]
